@@ -125,6 +125,7 @@ def go(args):
         )
     artifact.add_dir(export_path)
     run.log_artifact(artifact)
+    artifact.wait()
     # Plot feature importance
     fig_feat_imp = plot_feature_importance(sk_pipe, processed_features)
 
@@ -229,7 +230,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     processed_features = ordinal_categorical + non_ordinal_categorical + zero_imputed + ["last_review", "name"]
 
     # Create random forest
-    random_Forest = RandomForestRegressor(**rf_config)
+    random_forest = RandomForestRegressor(**rf_config)
 
     ######################################
     # Create the inference pipeline. The pipeline must have 2 steps: a step called "preprocessor" applying the
@@ -239,7 +240,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     sk_pipe = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("random_forest", random_Forest)
+            ("random_forest", random_forest)
         ]
     )
 
