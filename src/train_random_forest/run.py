@@ -100,7 +100,8 @@ def go(args):
     signature = mlflow.models.infer_signature(X_val[processed_features], y_pred)
     with tempfile.TemporaryDirectory() as tmp_dir:
         export_path = os.path.join(tmp_dir, "random_forest_dir")
-
+        
+        logger.info(f'Save model in {export_path}')
         mlflow.sklearn.save_model(
             sk_pipe,
             export_path,
@@ -117,15 +118,17 @@ def go(args):
     # run.log_artifact to log the artifact to the run
     # YOUR CODE HERE
     ######################################
-    artifact = wandb.Artifact(
+        artifact = wandb.Artifact(
             args.output_artifact,
             type="model_export",
             description="Random Forest pipeline export",
             metadata=rf_config,
         )
-    artifact.add_dir(export_path)
-    run.log_artifact(artifact)
-    artifact.wait()
+        artifact.add_dir(export_path)
+        run.log_artifact(artifact)
+  
+        logger.info("Wait for upload to complete")
+        artifact.wait()
     # Plot feature importance
     fig_feat_imp = plot_feature_importance(sk_pipe, processed_features)
 
